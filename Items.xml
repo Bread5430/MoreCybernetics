@@ -1,0 +1,53 @@
+<objects>
+  <object Name="PrecisionLens" Inherits="BaseCyberneticsEquipment_4point">
+    <part Name="Physics" Weight="1" />
+    <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
+    <part Name="Render" DisplayName="{{Y|precision glasses}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="CyberneticsBaseItem" Slots="Face" Cost="4" BehaviorDescription="Your weapons' percentage-based effects are 2X as likely to occur, including the base chance for critical hits." />
+    <part Name="AdjustSpecialEffectChances" FactorAdjust="2" ChargeUse="0" UsesChargePerActivation="false" NameForStatus="IncreasedPrecision" />  
+  </object>
+    <object Name="LoadBalancer" Inherits="BaseCyberneticsEquipment_1point">
+    <part Name="Physics" Weight="1" />
+    <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
+    <part Name="Render" DisplayName="{{Y|load balancer}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="1" BehaviorDescription="+25% Carry Weight" />
+    <part Name="CyberneticsLoadBalancer"/>  
+  </object>
+  <object Name="JetBoots" Inherits="BaseCyberneticsEquipment_3point">
+    <part Name="Physics" Weight="1" />
+    <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
+    <part Name="Render" DisplayName="{{Y|load balancer}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="CyberneticsBaseItem" Slots="Feet" Cost="3" BehaviorDescription="You may activate this item to dash for 1 turn.\n
+ When you move in a direction, you dash up to 20 spaces toward the nearest enemy or obstacle and perform an attack.\n
+ For every three spaces you dash, you get +2 to hit and +2 to penetration rolls." />
+    <part Name="CyberneticsLoadBalancer"/>  
+  </object>
+  <object Name="Autoloader" Inherits="BaseCyberneticsEquipment_2point">
+    <part Name="Physics" Weight="1" />
+    <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
+    <part Name="Render" DisplayName="{{Y|Auto Loader}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="CyberneticsBaseItem" Slots="Arm" Cost="2" BehaviorDescription="Reloading or Swapping energy cells no longer takes a turn."/>
+    <part Name="CyberneticsAutoLoaders"/>  
+  </object>
+  <object Name="PersonaCore" Inherits="BaseCyberneticsEquipment_5point">
+    <part Name="Physics" Weight="1" />
+    <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
+    <part Name="Render" DisplayName="{{Y|Auto Loader}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="5" BehaviorDescription="Reloading or Swapping energy cells no longer takes a turn."/>
+    <part Name="CyberneticsAutoLoaders"/>  
+  </object>
+  <object Name="CognitoFilters" Inherits="BaseCyberneticsEquipment_2point">
+    <part Name="Physics" Weight="1" />
+    <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
+    <part Name="Render" DisplayName="{{Y|Auto Loader}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="CyberneticsBaseItem" Slots="Face" Cost="2" BehaviorDescription="You cannot be confused."/>
+    <part Name="CyberneticsMindFilters"/>  
+  </object>
+  <object Name="PhaseOverlay" Inherits="BaseCyberneticsEquipment_3point">
+    <part Name="Physics" Weight="1" />
+    <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
+    <part Name="Render" DisplayName="{{Y|Auto Loader}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="You gain an additional Body equipment slot."/>
+    <part Name="CyberneticsMoreBody"/>  
+  </object>
+</objects>
