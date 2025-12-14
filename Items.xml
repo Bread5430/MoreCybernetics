@@ -25,7 +25,7 @@
   <object Name="Autoloader" Inherits="BaseCyberneticsEquipment_2point">
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
-    <part Name="Render" DisplayName="{{Y|Auto Loader}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="Render" DisplayName="{{Y|auto loader}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
     <part Name="CyberneticsBaseItem" Slots="Arm" Cost="2" BehaviorDescription="Reloading or Swapping energy cells no longer takes a turn."/>
     <part Name="CyberneticsAutoLoaders"/>  
   </object>
@@ -39,7 +39,7 @@
   <object Name="CognitoFilters" Inherits="BaseCyberneticsEquipment_2point">
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
-    <part Name="Render" DisplayName="{{Y|Auto Loader}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="Render" DisplayName="{{Y|CognitoFilters}}" Tile="Items/sw_flexors.bmp" TileColor="&amp;r" DetailColor="C" />
     <part Name="CyberneticsBaseItem" Slots="Face" Cost="2" BehaviorDescription="You cannot be confused."/>
     <part Name="CyberneticsMindFilters"/>  
   </object>

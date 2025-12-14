@@ -6,7 +6,7 @@ using XRL.World.Effects;
 namespace XRL.World.Parts
 {
     [Serializable]
-    public class CyberneticsFastBrain : IPart
+    public class CyberneticsLoadBalancer : IPart
 	{
         public override bool HandleEvent(GetMaxCarriedWeightEvent E)
         {

@@ -14,28 +14,31 @@ namespace XRL.World.Parts
             return true;
         }
 
-        public override bool WantEvent(int ID, int cascade)
+        public override void Register(GameObject Object, IEventRegistrar Registrar)
         {
-            if (base.WantEvent(ID, cascade)
-                || ID == BeginTakeAction.ID
-                || ID == DefenderAfterAttackMissed.ID)
-            {
-                return true;
-            }
-            return false;
-
+            Registrar.Register("DefenderAfterAttackMissed");
+            base.Register(Object, Registrar);
         }
 
 
-        // Create a new status effect to show the free action, refernce inflated axons
-        public override bool HandleEvent(DefenderAfterAttackMissed E)
-        {
-            if (E.Actor != null && E.Actor == ParentObject.Implantee)
+
+    // Create a new status effect to show the free action, refernce inflated axons
+	public override bool FireEvent(Event E)
+
+    
+    
+	{
+		if (E.ID == "DefenderAfterAttackMissed")
+		{
+            GameObject gameObjectParameter = E.GetGameObjectParameter("Defender");
+			if (ParentObject.Implantee != null && gameObjectParameter == ParentObject.Implantee)
             {
-                E.Actor.ApplyEffect(new AxonsInflated(1, 50, ParentObject));
+                ParentObject.ApplyEffect(new AxonsInflated(1, 50, ParentObject));
             }
-            return base.HandleEvent(E);
-        }
+		}
+		return base.FireEvent(E);
+	}
+
     }
 }
 

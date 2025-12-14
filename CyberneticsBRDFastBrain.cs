@@ -6,7 +6,7 @@ using XRL.World.Effects;
 namespace XRL.World.Parts
 {
     [Serializable]
-    public class CyberneticsFastBrain : IPart
+    public class CyberneticsBRDFastBrain : IPart
 	{
         public override bool WantEvent(int ID, int cascade)
         {

@@ -21,7 +21,7 @@ namespace XRL.World.Parts
 
         public override bool HandleEvent(CommandReloadEvent E)
         {
-            E.FreeAction == true;
+            E.FreeAction = true;
             return base.HandleEvent(E);
         }
 
