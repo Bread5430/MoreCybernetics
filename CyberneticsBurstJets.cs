@@ -20,7 +20,7 @@ namespace XRL.World.Parts
 
 		public int GetCooldown()
 		{
-			return 100;
+			return 150;
 		}
 
 		public int GetDuration()
@@ -31,21 +31,27 @@ namespace XRL.World.Parts
 		public void CollectStats(Templates.StatCollector stats)
 		{
 			stats.Set("Duration", GetDuration());
-			stats.CollectCooldownTurns(MyActivatedAbility(ActivatedAbilityID, ParentObject.Equipped), GetCooldown());
+			stats.CollectCooldownTurns("Cooldown", GetCooldown());
 		}
 
 		public override bool WantEvent(int ID, int cascade)
 		{
-			if (!base.WantEvent(ID, cascade) && ID != AIGetMovementAbilityListEvent.ID && ID != AIGetOffensiveAbilityListEvent.ID && ID != EquippedEvent.ID && ID != GetInventoryActionsEvent.ID && ID != InventoryActionEvent.ID && ID != UnequippedEvent.ID)
+			if (base.WantEvent(ID, cascade)
+				|| ID == AIGetMovementAbilityListEvent.ID
+				|| ID == AIGetOffensiveAbilityListEvent.ID 
+				|| ID == ImplantedEvent.ID 
+				|| ID == CommandEvent.ID
+				|| ID == UnImplantedEvent.ID
+				|| ID == BeforeAbilityManagerOpenEvent.ID)
 			{
-				return ID == SingletonEvent<BeforeAbilityManagerOpenEvent>.ID;
+				return true;
 			}
-			return true;
+			return false;
 		}
 
 		public override bool HandleEvent(BeforeAbilityManagerOpenEvent E)
 		{
-			DescribeMyActivatedAbility(ActivatedAbilityID, CollectStats, ParentObject.Equipped);
+            DescribeMyActivatedAbility(ActivatedAbilityID, CollectStats, ParentObject?.Implantee);
 			return base.HandleEvent(E);
 		}
 
@@ -60,77 +66,59 @@ namespace XRL.World.Parts
 
 		public override bool HandleEvent(AIGetOffensiveAbilityListEvent E)
 		{
-			if (E.Actor == ParentObject.Equipped && E.Actor.IsActivatedAbilityAIUsable(ActivatedAbilityID))
+			if (E.Actor == ParentObject.Implantee && E.Actor.IsActivatedAbilityAIUsable(ActivatedAbilityID))
 			{
 				E.Add("ActivateBurstJet", 1, ParentObject, Inv: true);
 			}
 			return base.HandleEvent(E);
 		}
 
-		public override bool HandleEvent(EquippedEvent E)
-		{
-			if (ParentObject.IsEquippedProperly())
-			{
-				E.Actor.RegisterPartEvent(this, "ActivateBurstJet");
-				ActivatedAbilityID = E.Actor.AddActivatedAbility("Activate Afterburners", "ActivateBurstJet", "Items");
-			}
-			return base.HandleEvent(E);
-		}
+        public override bool HandleEvent(ImplantedEvent E)
+        {
+            ActivatedAbilityID = E.Implantee.AddActivatedAbility("Activate Afterburners", "ActivateBurstJet", "Cybernetics", "You may perform a dash attack during your next action.");
+            return base.HandleEvent(E);
+        }
 
-		public override bool HandleEvent(UnequippedEvent E)
-		{
-			E.Actor.RemoveEffect<Dashing>();
-			E.Actor.UnregisterPartEvent(this, "ActivateBurstJet");
-			E.Actor.RemoveActivatedAbility(ref ActivatedAbilityID);
-			return base.HandleEvent(E);
-		}
+        public override bool HandleEvent(UnimplantedEvent E)
+        {
+            E.Implantee.RemoveActivatedAbility(ref ActivatedAbilityID);
+            return base.HandleEvent(E);
+        }
 
-		public override bool HandleEvent(GetInventoryActionsEvent E)
-		{
-			GameObject equipped = ParentObject.Equipped;
-			if (equipped != null && equipped.IsActivatedAbilityUsable(ActivatedAbilityID))
-			{
-				E.AddAction("Activate", "activate", "ActivateBurstJet", null, 'a');
-			}
-			return base.HandleEvent(E);
-		}
-
-		public override bool HandleEvent(InventoryActionEvent E)
-		{
-			if (E.Command == "ActivateBurstJet")
-			{
-				ActivateBurstJet();
-			}
-			return base.HandleEvent(E);
-		}
-
-		public override bool FireEvent(Event E)
-		{
-			if (E.ID == "ActivateBurstJet" && !ActivateBurstJet())
-			{
-				return false;
+		public override bool HandleEvent(CommandEvent E)
+        {
+            if (E.Command == commandId && E.Actor == ParentObject.Implantee)
+            {
+                if (base.OnWorldMap)
+                {
+                    return ParentObject.Fail("You cannot do that on the world map.");
+                }
+				if (!ActivateBurstJet())
+				{
+					return false;
+				}
 			}
 			return base.FireEvent(E);
 		}
 
 		private bool ActivateBurstJet()
 		{
-			GameObject equipped = ParentObject.Equipped;
-			if (equipped == null)
+			GameObject Implantee = ParentObject.Implantee;
+			if (Implantee == null)
 			{
 				return false;
 			}
-			if (!equipped.IsActivatedAbilityUsable(ActivatedAbilityID))
+			if (!Implantee.IsActivatedAbilityUsable(ActivatedAbilityID))
 			{
 				return false;
 			}
-			if (!equipped.ApplyEffect(new Dashing(GetDuration())))
+			if (!Implantee.ApplyEffect(new Dashing(GetDuration())))
 			{
 				return false;
 			}
-			IComponent<GameObject>.XDidY(equipped, "start", "dashing in a plume of flame and smoke", "!", null, null, equipped);
-			equipped.CooldownActivatedAbility(ActivatedAbilityID, GetCooldown());
-			equipped.PlayWorldSound("Sounds/Interact/sfx_interact_jetpack_activate");
+			IComponent<GameObject>.XDidY(Implantee, "start", "dashing in a plume of flame and smoke", "!", null, null, Implantee);
+			Implantee.CooldownActivatedAbility(ActivatedAbilityID, GetCooldown());
+			Implantee.PlayWorldSound("Sounds/Interact/sfx_interact_jetpack_activate");
 			return true;
 		}
 	}

@@ -14,25 +14,22 @@ namespace XRL.World.Parts{
 		}
 
 		public override bool WantEvent(int ID, int cascade)
-		{
-			if (!base.WantEvent(ID, cascade) && ID != SingletonEvent<GetAvailableComputePowerEvent>.ID && ID != ImplantedEvent.ID)
-			{
-				return ID == UnimplantedEvent.ID;
-			}
-			return true;
-		}
+        {
+            if (base.WantEvent(ID, cascade)
+                || ID == SingletonEvent<GetAvailableComputePowerEvent>.ID)
+            {
+                return true;
+            }
+            return false;
+            
+        }
 
 
 		public override bool HandleEvent(GetAvailableComputePowerEvent E)
 		{
 			if (E.Actor == ParentObject.Implantee)
 			{
-				Dictionary<string, Statistic> statistics = ParentObject.Implantee.Statistics;
-				Statistic value = null;
-				if (statistics != null && statistics.TryGetValue("Ego", out value))
-				{
-					E.Amount += value.Modifier * 10;
-				}
+				E.Amount += Math.Max(ParentObject.Implantee.StatMod("Ego") * 10, 0);
 			}
 			return base.HandleEvent(E);
 		}
