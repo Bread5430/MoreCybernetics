@@ -1,0 +1,10 @@
+{
+	"id": "More Cybernetics",
+	"loadorder": 1,
+	"title": "{{W|More Cybernetics}}",
+	"description": "Adds a few new cybernetics inspired by existing items.",
+	"Tags": "cybernetic, implant",
+	"version": "0.3",
+	"author": "{{c|Bread}}",
+	"previewImage": "icon.png"
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<populations>
+    <population Name="BRD_Implants">
+        <group Style="pickeach">
+            <!-- 1 point -->
+            <object Blueprint="BRD_LoadBalancer" Number="1" /> 
+            
+            <!-- 2 point -->
+            <object Blueprint="BRD_Autoloader" Number="1" /> 
+            <object Blueprint="BRD_CognitoFilters" Number="1" /> 
+
+            <!-- 3 point -->
+            <object Blueprint="BRD_PhaseOverlay" Number="1"  />
+            <object Blueprint="BRD_JetBoots" Number="1"  />
+
+            <!-- 4 point -->
+            <object Blueprint="BRD_PrecisionLens" Number="1"  />
+
+            <!-- 5 point -->
+            <object Blueprint="BRD_PersonaCore" Number="1"  />
+
+        </group>
+    </population>
+
+    <population Name="Implants_1and2Pointers" Load="Merge">
+        <group Name="Items" Style="pickone" Load="Merge">
+            <object Blueprint="BRD_LoadBalancer" Number="1" Weight="10" /> 
+            <object Blueprint="BRD_Autoloader" Number="1" Weight="10" /> 
+            <object Blueprint="BRD_CognitoFilters" Number="1" Weight="10" /> 
+        </group>
+    </population>
+    <population Name="Implants_3Pointers" Load="Merge">
+        <group Name="Items" Style="pickone" Load="Merge">
+            <object Blueprint="BRD_PhaseOverlay" Number="1" Weight="1" />
+            <object Blueprint="BRD_JetBoots" Number="1" Weight="1" />
+        </group>
+    </population>
+    <population Name="Implants_4PlusPointers" Load="Merge">
+        <group Name="Items" Style="pickone" Load="Merge">
+            <object Blueprint="BRD_PrecisionLens" Number="1"  />
+            <object Blueprint="BRD_PersonaCore" Number="1" Weight="10" />
+        </group>
+    </population>
+</populations>
