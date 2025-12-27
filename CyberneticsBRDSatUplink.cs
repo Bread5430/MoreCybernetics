@@ -1,5 +1,9 @@
 using System;
 using XRL.World.Effects;
+using System.Collections.Generic;
+using XRL.UI;
+using XRL.World.AI;
+
 
 namespace XRL.World.Parts
 {
@@ -7,19 +11,21 @@ namespace XRL.World.Parts
 	public class CyberneticsBRDSatUplink : IPart
 	{
 		public Guid ActivatedAbilityID = Guid.Empty;
+		public string commandId = "ActivateComLink";
+
 
 		List<string> OptionStrings = new List<string>
 		{
 			"Mech Drop", // Steel's Perfection
 			"Supply Drop", // Boundless Riches
-			"Orbital Strike" // Heaven's Fire
+			"Orbital Strike" // Sultan's Gaze
 		};
 
-		List<string> keymap = new List<string>
+		List<char> keymap = new List<char>
 		{
-			"1",
-			"2",
-			"3"
+			'1',
+			'2',
+			'3'
 		};
 
 		public override bool SameAs(IPart p)
@@ -45,7 +51,7 @@ namespace XRL.World.Parts
 		public void CollectStats(Templates.StatCollector stats)
 		{
 			stats.Set("Duration", GetDuration());
-			stats.CollectCooldownTurns("Cooldown", GetCooldown());
+			stats.Set("Cooldown", GetCooldown());
 		}
 
 		public override bool WantEvent(int ID, int cascade)
@@ -54,7 +60,7 @@ namespace XRL.World.Parts
 				|| ID == AIGetOffensiveAbilityListEvent.ID 
 				|| ID == ImplantedEvent.ID 
 				|| ID == CommandEvent.ID
-				|| ID == UnImplantedEvent.ID
+				|| ID == UnimplantedEvent.ID
 				|| ID == BeforeAbilityManagerOpenEvent.ID)
 			{
 				return true;
@@ -79,7 +85,7 @@ namespace XRL.World.Parts
 
         public override bool HandleEvent(ImplantedEvent E)
         {
-            ActivatedAbilityID = E.Implantee.AddActivatedAbility("Open Com-link", "ActivateUplink", "Cybernetics", "Hack into a local kill-sat, and call down orbital support.");
+            ActivatedAbilityID = E.Implantee.AddActivatedAbility("Open Com-link", commandId, "Cybernetics", "Hack into a local kill-sat, and call down orbital support.");
             return base.HandleEvent(E);
         }
 
@@ -115,10 +121,10 @@ namespace XRL.World.Parts
 
 				if (choice_num > 0)
 				{
-					gameObject.UseEnergy(1000, "Orbital Package Request");
+					E.Actor.UseEnergy(1000, "Orbital Package Request");
 				}
 			}
-			return base.FireEvent(E);
+			return base.HandleEvent(E);
 		}
 
 		public void mech_drop()
@@ -138,10 +144,6 @@ namespace XRL.World.Parts
 
 		private void Deploy(Cell Cell, GameObject Object, GameObject Actor)
 		{
-			if (!Duration.IsNullOrEmpty())
-			{
-				Object.AddPart(new Temporary(Duration.RollCached()));
-			}
 
 			Cell.AddObject(Object);
 			Object.MakeActive();
@@ -152,12 +154,9 @@ namespace XRL.World.Parts
 			if (Actor != null)
 			{
 				Object.SetAlliedLeader<AllyConstructed>(Actor);
-				Object.IsTrifling = TriflingCompanion;
+				Object.IsTrifling = true;
 			}
-			if (DustPuffEach)
-			{
-				Object.DustPuff();
-			}
+			Object.DustPuff();
 		}
 
 	}

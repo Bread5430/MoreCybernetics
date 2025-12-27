@@ -8,6 +8,8 @@ namespace XRL.World.Parts
 	{
 		public Guid ActivatedAbilityID = Guid.Empty;
 
+		public string commandId = "ActivateBurstJet";
+
 		public override bool SameAs(IPart p)
 		{
 			return false;
@@ -31,7 +33,7 @@ namespace XRL.World.Parts
 		public void CollectStats(Templates.StatCollector stats)
 		{
 			stats.Set("Duration", GetDuration());
-			stats.CollectCooldownTurns("Cooldown", GetCooldown());
+			stats.Set("Cooldown", GetCooldown());
 		}
 
 		public override bool WantEvent(int ID, int cascade)
@@ -41,7 +43,7 @@ namespace XRL.World.Parts
 				|| ID == AIGetOffensiveAbilityListEvent.ID 
 				|| ID == ImplantedEvent.ID 
 				|| ID == CommandEvent.ID
-				|| ID == UnImplantedEvent.ID
+				|| ID == UnimplantedEvent.ID
 				|| ID == BeforeAbilityManagerOpenEvent.ID)
 			{
 				return true;
@@ -75,10 +77,9 @@ namespace XRL.World.Parts
 
         public override bool HandleEvent(ImplantedEvent E)
         {
-            ActivatedAbilityID = E.Implantee.AddActivatedAbility("Activate Afterburners", "ActivateBurstJet", "Cybernetics", "You may perform a dash attack during your next action.");
+            ActivatedAbilityID = E.Implantee.AddActivatedAbility("Activate Afterburners", commandId, "Cybernetics", "You may perform a dash attack during your next action.");
             return base.HandleEvent(E);
         }
-
         public override bool HandleEvent(UnimplantedEvent E)
         {
             E.Implantee.RemoveActivatedAbility(ref ActivatedAbilityID);
@@ -98,7 +99,7 @@ namespace XRL.World.Parts
 					return false;
 				}
 			}
-			return base.FireEvent(E);
+			return base.HandleEvent(E);
 		}
 
 		private bool ActivateBurstJet()
