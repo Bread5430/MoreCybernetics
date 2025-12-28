@@ -77,6 +77,7 @@ namespace XRL.World.Parts
 
         public override bool HandleEvent(ImplantedEvent E)
         {
+			E.Actor.RemoveEffect<Dashing>();
             ActivatedAbilityID = E.Implantee.AddActivatedAbility("Activate Afterburners", commandId, "Cybernetics", "You may perform a dash attack during your next action.");
             return base.HandleEvent(E);
         }
