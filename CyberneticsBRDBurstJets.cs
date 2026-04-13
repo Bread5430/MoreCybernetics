@@ -4,7 +4,7 @@ using XRL.World.Effects;
 namespace XRL.World.Parts
 {
     [Serializable]
-	public class CyberneticsBurstJets : IPart
+	public class CyberneticsBRDBurstJets : IPart
 	{
 		public Guid ActivatedAbilityID = Guid.Empty;
 

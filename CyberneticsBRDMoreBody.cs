@@ -3,9 +3,9 @@ using System;
 namespace XRL.World.Parts
 {
    [Serializable]
-    public class CyberneticsMoreBody : IPart
+    public class CyberneticsBRDMoreBody : IPart
     {
-        public string ManagerID => ParentObject.ID + "::CyberneticsMoreBody";
+        public string ManagerID => ParentObject.ID + "::CyberneticsBRDMoreBody";
 
         public override bool SameAs(IPart p)
         {

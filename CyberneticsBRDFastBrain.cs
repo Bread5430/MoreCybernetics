@@ -2,7 +2,7 @@ using System;
 using XRL.Rules;
 using XRL.World.Effects;
 
-
+// TODO: Not an interesting cybernetic yet, need nore brainstorming. Ignore in implementation.
 namespace XRL.World.Parts
 {
     [Serializable]

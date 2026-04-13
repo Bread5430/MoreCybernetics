@@ -6,7 +6,7 @@ using XRL.World.Effects;
 namespace XRL.World.Parts
 {
     [Serializable]
-    public class CyberneticsLoadBalancer : IPart
+    public class CyberneticsBRDLoadBalancer : IPart
 	{
 
         public override bool WantEvent(int ID, int cascade)

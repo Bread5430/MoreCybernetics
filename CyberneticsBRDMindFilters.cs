@@ -3,7 +3,7 @@ using System;
 namespace XRL.World.Parts
 {
     [Serializable]
-    public class CyberneticsMindFilter : IPart
+    public class CyberneticsBRDMindFilters : IPart
     {
         public override bool SameAs(IPart p)
         {
