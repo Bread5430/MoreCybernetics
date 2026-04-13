@@ -1,12 +1,13 @@
 using System;
-using XRL.World.Effects;
 using System.Collections.Generic;
-using XRL.UI;
-using XRL.World.AI;
+using ConsoleLib.Console;
+using Genkit;
 using XRL.Core;
 using XRL.UI;
+using XRL.World.AI;
 using XRL.World.AI.GoalHandlers;
 using XRL.World.Capabilities;
+using XRL.World.Effects;
 
 namespace XRL.World.Parts
 {
@@ -136,7 +137,7 @@ namespace XRL.World.Parts
 			Cell cell = PickDestinationCell(12, RequireCombat: true, Label: "Choose Calldown Destination", Snap: true);
 			if (cell == null)
 			{
-				return false;
+				return;
 			}
 
 			GameObject widget = GameObjectFactory.Factory.CreateObject("Widget");
@@ -196,33 +197,34 @@ namespace XRL.World.Parts
 			public override void OnPaint(ScreenBuffer buffer)
 			{
 				int num = XRLCore.CurrentFrame % 60;
-				Location2D cell = ParentObject.CurrentCell.Location;
+				Location2D root = ParentObject?.CurrentCell?.Location;
+				if (root == null)
+				{
+					return;
+				}
 				ConsoleChar consoleChar;
 				if (num < 30)
 				{
 					int radius = num / 10;
-					if (cell != null)
+					for (int i = -radius; i <= radius; i++)
 					{
-						for (int i = -radius; i <= radius; i++)
+						for (int j = -radius; j <= radius; j++)
 						{
-							for (int j = -radius; j <= radius; j++)
+							Location2D loc = Location2D.Get(root.X + i, root.Y + j);
+							if (loc != null && loc.Distance(root) == radius)
 							{
-								Location2D loc = Location2D.Get(cell.X + i, cell.Y + j);
-								if (loc != null && loc.Distance(cell) == radius)
+								consoleChar = buffer.get(loc.X, loc.Y);
+								if (consoleChar != null)
 								{
-									consoleChar = buffer.get(loc.X, loc.Y);
-									if (consoleChar != null)
-									{
-										consoleChar.Tile = null;
-										consoleChar.Char = '!';
-										consoleChar.Foreground = The.Color.R;
-									}
+									consoleChar.Tile = null;
+									consoleChar.Char = '!';
+									consoleChar.Foreground = The.Color.R;
 								}
 							}
 						}
 					}
 				}
-				consoleChar = buffer.get(cell.X, cell.Y);
+				consoleChar = buffer.get(root.X, root.Y);
 				if (consoleChar != null)
 				{
 					consoleChar.Tile = null;

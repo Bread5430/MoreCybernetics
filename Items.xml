@@ -33,7 +33,7 @@
     <part Name="Physics" Weight="1" />
     <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
     <part Name="Render" DisplayName="{{Y|persona core}}" Tile="Cybernetics/cyb_personacore.bmp" TileColor="&amp;r" DetailColor="C" />
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="5" BehaviorDescription="Reloading or Swapping energy cells no longer takes a turn."/>
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="5" BehaviorDescription="Gain 10 compute power per Ego modifier."/>
     <part Name="CyberneticsPersonaCore"/>  
   </object>
   <object Name="BRD_CognitoFilters" Inherits="BaseCyberneticsEquipment_2point">
@@ -49,5 +49,12 @@
     <part Name="Render" DisplayName="{{Y|phase overlay}}" Tile="Cybernetics/cyb_phase_overlay.bmp" TileColor="&amp;r" DetailColor="C" />
     <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="You gain an additional Body equipment slot."/>
     <part Name="CyberneticsMoreBody"/>  
+  </object>
+  <object Name="BRD_SuperSweep" Inherits="BaseCyberneticsEquipment_3point">
+    <part Name="Physics" Weight="1" />
+    <part Name="Description" Short="Neuronically charged tissue sheaths transmit the will faster than what cell biology had achieved." />
+    <part Name="Render" DisplayName="{{Y|heavy mounts}}" Tile="Cybernetics/cyb_supersweep.bmp" TileColor="&amp;r" DetailColor="C" />
+    <part Name="CyberneticsBaseItem" Slots="Hand" Cost="3" BehaviorDescription="Sweep attacks fire 5 additional shots."/>
+    <part Name="CyberneticsPropertyModifier" Props="HeavyWeaponsSweepModifyShots:5" />
   </object>
 </objects>

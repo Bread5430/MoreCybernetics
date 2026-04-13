@@ -19,7 +19,7 @@ namespace XRL.World.Parts
 
         public override bool HandleEvent(GetEnergyCostEvent E)
         {
-            // Ideally this should only apply to skill uses, not sure how to achieve that 
+            // Ideally this should only apply to skill uses, doesn't seem to be possible
             if (E.Type != null)
             {
                 E.PercentageReduction += 15;
