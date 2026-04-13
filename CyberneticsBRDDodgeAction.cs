@@ -27,7 +27,7 @@ namespace XRL.World.Parts
 				GameObject defender = E.GetGameObjectParameter("Defender");
 				if (defender == ParentObject.Implantee)
 				{
-					ParentObject.Implantee.ApplyEffect(new BRD_DodgeBoost(11, 100, 10, ParentObject));
+					ParentObject.Implantee.ApplyEffect(new BRD_DodgeBoost(10, 100, 9, ParentObject));
 				}
 			}
 			return base.FireEvent(E);

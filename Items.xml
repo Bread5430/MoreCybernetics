@@ -134,11 +134,11 @@
 
     <part Name="Physics" Weight="1" />
 
-    <part Name="Description" Short="Silk-thin filaments clasp the gut wall and arrest the tides of digestion until a meal's blessing is held like a jewel under glass." />
+    <part Name="Description" Short="Silk-thin filaments clasp the gut wall and arrest a meal's blessing until it is held like a jewel under glass." />
 
     <part Name="Render" DisplayName="{{Y|metabolic anchor}}" Tile="CyberneticsBRD/cyb_stomach.png" TileColor="&amp;r" DetailColor="C" />
 
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="5" BehaviorDescription="While active, your current meal effect is integrated and no longer expires from hunger or eating. Activating makes you hungry. Toggle off to release integrated effects." />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="5" BehaviorDescription="While active, your current meal effect is integrated and no longer expires from hunger or eating. Activating makes you hungry. Toggle off to release integrated effects.\nAllows you to maintain multiple meal effects at once." />
 
     <part Name="CyberneticsBRDPermanentCooking"/>  
 
@@ -150,7 +150,7 @@
 
     <part Name="Description" Short="Fibrous proprioceptors stud the torso and spine; when a blow cleaves empty air they dump synthetic adrenaline into the motor strip." />
 
-    <part Name="Render" DisplayName="{{Y|evasive lattice}}" Tile="CyberneticsBRD/cyb_phase_overlay.png" TileColor="&amp;r" DetailColor="C" />
+    <part Name="Render" DisplayName="{{Y|evasive lattice}}" Tile="CyberneticsBRD/cyb_dodgelattice.png" TileColor="&amp;r" DetailColor="C" />
 
     <part Name="CyberneticsBaseItem" Slots="Head,Body,Back" Cost="2" BehaviorDescription="After dodging an attack, you gain +100 Quickness for 1 turn. This effect has a 10 turn cooldown." />
 
@@ -164,7 +164,7 @@
 
     <part Name="Description" Short="Parallel lymph couplings and microports open one more channel for measured chems, shunting each dose past overloaded pathways." />
 
-    <part Name="Render" DisplayName="{{Y|infusion manifold}}" Tile="CyberneticsBRD/cyb_autoloaders.png" TileColor="&amp;r" DetailColor="C" />
+    <part Name="Render" DisplayName="{{Y|infusion manifold}}" Tile="CyberneticsBRD/cyb_moretonic.png" TileColor="&amp;r" DetailColor="C" />
 
     <part Name="CyberneticsBaseItem" Slots="Feet,Hands,Arm" Cost="1" BehaviorDescription="Allows you to inject one additional tonic without risk of side effects." />
 
@@ -178,7 +178,7 @@
 
     <part Name="Description" Short="Tracer nanites read circulating elixirs and translate their signatures into spring-tension along the musculature." />
 
-    <part Name="Render" DisplayName="{{Y|tonic motility core}}" Tile="CyberneticsBRD/cyb_personacore.png" TileColor="&amp;r" DetailColor="C" />
+    <part Name="Render" DisplayName="{{Y|tonic motility core}}" Tile="CyberneticsBRD/cyb_tonicengine.png" TileColor="&amp;r" DetailColor="C" />
 
     <part Name="CyberneticsBaseItem" Slots="Head,Back" Cost="2" BehaviorDescription="Gain +20 MoveSpeed per active tonic." />
 
