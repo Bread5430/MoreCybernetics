@@ -55,11 +55,9 @@ namespace XRL.World.Effects
                 return false;
             }
             ProceduralCookingEffect sticky = CreateStickyCloneFrom(src);
-            int duration = src.Duration;
-            string displayName = src.DisplayName;
             go.RemoveEffect(src);
-            sticky.Duration = duration;
-            sticky.DisplayName = displayName;
+            sticky.Duration = src.Duration;
+            sticky.DisplayName = src.DisplayName;
             sticky.Init(go);
             go.ApplyEffect(sticky);
             return true;

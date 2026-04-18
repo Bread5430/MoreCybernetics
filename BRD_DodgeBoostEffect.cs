@@ -33,16 +33,20 @@ namespace XRL.World.Effects
 
 		public void Initialize(int Tier)
 		{
-			Duration = 11;
-			Bonus = 100;
-			Cooldown = 10;
+			if (Duration <= 0)
+			{
+				Duration = 11;
+			}
+			if (Bonus == 0)
+			{
+				Bonus = 100;
+			}
+			if (Cooldown <= 0)
+			{
+				Cooldown = 10;
+			}
 			isonCoolDown = false;
 		}
-
-		/*public override int GetEffectType() // Not sure if i need this
-		{
-			return 83894272;
-		}*/
 
 		public override bool SameAs(Effect e)
 		{
@@ -75,6 +79,18 @@ namespace XRL.World.Effects
 
 		public override void Remove(GameObject Object)
 		{
+			ClearSpeedStatShifts();
+			base.Remove(Object);
+		}
+
+		public void Refresh(int Duration, int Bonus, int Cooldown, GameObject Source)
+		{
+			this.Duration = Duration;
+			this.Bonus = Bonus;
+			this.Cooldown = Cooldown;
+			this.Source = Source?.ID;
+			isonCoolDown = false;
+			base.StatShifter.SetStatShift("Speed", this.Bonus);
 		}
 
 		void ClearSpeedStatShifts()
@@ -100,19 +116,22 @@ namespace XRL.World.Effects
 			}
 			else
 			{
-				GameObject sourceImplant = GameObject.FindByID(Source);
-				if (!GameObject.Validate(ref sourceImplant) || sourceImplant.Implantee != base.Object)
+				if (!string.IsNullOrEmpty(Source))
 				{
-					Duration = 0;
+					GameObject sourceImplant = GameObject.FindByID(Source);
+					if (!GameObject.Validate(ref sourceImplant) || sourceImplant.Implantee != base.Object)
+					{
+						Duration = 0;
+					}
 				}
-				else if (Duration > 0 && Duration != 9999)
+				if (Duration > 0 && Duration != 9999)
 				{
+					if (!isonCoolDown && Duration <= Cooldown)
+					{
+						isonCoolDown = true;
+						ClearSpeedStatShifts();
+					}
 					Duration--;
-				}
-				else if (Duration == Cooldown) // Get Duration - Cooldown turns of quickness, then go on cooldown for Cooldown turns
-				{
-					isonCoolDown = true;
-					ClearSpeedStatShifts();
 				}
 			}
 			return base.HandleEvent(E);

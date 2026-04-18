@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using XRL.World;
 using XRL.Rules;
 using XRL.UI;
 using XRL.World.AI;
@@ -12,7 +13,7 @@ namespace XRL.World.Parts
     [Serializable]
     public class CyberneticsBRDRangedRebuke: IPart
 	{
-
+		public string commandId = "CommandBRDRebukeRobot";
 		public Guid ActivatedAbilityID = Guid.Empty;
 		public int Bonus = 2;
 
@@ -55,25 +56,22 @@ namespace XRL.World.Parts
 		public override void Register(GameObject Object, IEventRegistrar Registrar)
 		{
 			Registrar.Register("CanCompanionRestorePartyLeader");
-			Registrar.Register("CommandBRDRebukeRobot");
 			base.Register(Object, Registrar);
 		}
 
-		public override bool FireEvent(Event E)
-		{
-			if (E.ID == "CommandBRDRebukeRobot")
-			{
-				if (!AttemptRebuke())
-				{
-					return false;
-				}
-			}
-			else if (E.ID == "CanCompanionRestorePartyLeader" && ParentObject.SupportsFollower(E.GetGameObjectParameter("Companion"), 8))
-			{
-				return false;
-			}
-			return base.FireEvent(E);
-		}
+
+        public override bool HandleEvent(CommandEvent E)
+        {
+            if (E.Command == commandId && E.Actor == ParentObject.Implantee)
+            {
+                IComponent<GameObject>.AddPlayerMessage("debug: CommandBRDRebukeRobot event fired", 'g');
+                if (!AttemptRebuke())
+                {
+                    return false;
+                }
+            }
+            return base.HandleEvent(E);
+        }
 
 		public override bool HandleEvent(UnimplantedEvent E)
 		{
@@ -84,19 +82,7 @@ namespace XRL.World.Parts
 		
 		public override bool HandleEvent(ImplantedEvent E)
 		{
-			ActivatedAbilityID = AddMyActivatedAbility("Tele-rebuke", "CommandBRDRebukeRobot", "Skills", "Rebuke a robot from range. Level + Ego-based difficulty check.", "\u0003");
-			return base.HandleEvent(E);
-		}
-
-			public override bool HandleEvent(GetRebukeLevelEvent E)
-		{
-			E.Level += GetAvailableComputePowerEvent.AdjustUp(E.Actor, Bonus);
-			return base.HandleEvent(E);
-		}
-
-		public override bool HandleEvent(GetShortDescriptionEvent E)
-		{
-			E.Postfix.AppendRules("Compute power on the local lattice increases this item's effectiveness.");
+			ActivatedAbilityID = E.Implantee.AddActivatedAbility("Tele-rebuke", commandId, "Cybernetics", "Rebuke a robot from range. Level + Ego-based difficulty check.", "\u0003");
 			return base.HandleEvent(E);
 		}
 
@@ -106,7 +92,7 @@ namespace XRL.World.Parts
 			{
 				return false;
 			}
-			Cell cell = PickDirection("Rebuke what robot?");
+			Cell cell = PickDestinationCell(5, AllowVis.OnlyVisible, Locked: false, IgnoreSolid: false, IgnoreLOS: false, RequireCombat: false, PickTarget.PickStyle.EmptyCell, "Rebuke what robot?", Snap: true);
 			if (cell == null)
 			{
 				return false;
@@ -157,29 +143,12 @@ namespace XRL.World.Parts
 
 		public bool Rebuke(MentalAttackEvent E)
 		{
-			int penetrations = E.Penetrations;
-			GameObject defender = E.Defender;
-			if (penetrations <= 0)
-			{
-				IComponent<GameObject>.AddPlayerMessage("Your argument does not compute.");
-				return false;
-			}
-			if (penetrations <= 2)
-			{
-				IComponent<GameObject>.XDidY(defender, "wander", "away disinterestedly");
-				Neutralize(defender);
-			}
-			else
-			{
-				FinalizeRebuke(E.Attacker, defender);
-			}
-			return true;
+			return ParentObject.GetPart<Persuasion_RebukeRobot>()?.Rebuke(E) ?? false;
 		}
 
 		public bool FinalizeRebuke(GameObject Actor, GameObject Robot)
 		{
-			Neutralize(Robot);
-			return Robot.ApplyEffect(new Rebuked(Actor));
+			return ParentObject.GetPart<Persuasion_RebukeRobot>()?.FinalizeRebuke(Actor, Robot) ?? false;
 		}
 
 		public static bool Rebuke(GameObject Actor, GameObject Robot)
@@ -187,59 +156,14 @@ namespace XRL.World.Parts
 			return Actor.GetPart<Persuasion_RebukeRobot>()?.FinalizeRebuke(Actor, Robot) ?? false;
 		}
 
-		private bool OurEffect(Effect FX)
-		{
-			if (FX is Rebuked rebuked)
-			{
-				return rebuked.Rebuker == ParentObject;
-			}
-			return false;
-		}
-
 		public static void SyncTarget(GameObject Rebuker, GameObject Target = null, bool Independent = false)
 		{
-			if (Rebuker.Brain == null)
-			{
-				return;
-			}
-			int num = GetCompanionLimitEvent.GetFor(Rebuker, "Rebuke");
-			if (Target == null)
-			{
-				num++;
-			}
-			PartyCollection partyMembers = Rebuker.Brain.PartyMembers;
-			int[] array = (from x in partyMembers
-				where x.Value.Flags.HasBit(8)
-				orderby Brain.PartyMemberOrder(x) descending
-				select x.Key).ToArray();
-			int num2 = 0;
-			for (int num3 = array.Length; num3 >= num; num3--)
-			{
-				partyMembers.Remove(array[num2]);
-				num2++;
-			}
-			if (Target != null)
-			{
-				partyMembers[Target] = 8;
-				if (Independent)
-				{
-					partyMembers[Target] |= 8388608;
-				}
-			}
+			Persuasion_RebukeRobot.SyncTarget(Rebuker, Target, Independent);
 		}
 
 		public static void Neutralize(GameObject Actor, GameObject Object)
 		{
-			Brain brain = Object.Brain;
-			if (brain != null)
-			{
-				brain.StopFighting();
-				brain.Goals.Clear();
-				brain.Allegiance.Hostile = false;
-				brain.Target = null;
-				brain.Wanders = true;
-				brain.AddOpinion<OpinionRebuke>(Actor);
-			}
+			Persuasion_RebukeRobot.Neutralize(Actor, Object);
 		}
 
 		public void Neutralize(GameObject Object)

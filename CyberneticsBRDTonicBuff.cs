@@ -58,7 +58,7 @@ namespace XRL.World.Parts
 				return;
 			}
 			int bonus = host.GetTonicEffectCount() * 20;
-			StatShifter.SetStatShift(host, "MoveSpeed", bonus);
+			StatShifter.SetStatShift(host, "MoveSpeed", -bonus);
 		}
 	}
 }

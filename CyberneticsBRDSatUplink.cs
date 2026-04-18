@@ -8,9 +8,10 @@ using XRL.UI;
 using XRL.World;
 using XRL.World.AI;
 using XRL.World.AI.GoalHandlers;
+using XRL.Rules;
 using XRL.World.Capabilities;
 using XRL.World.Effects;
-using XRL.Liquids.LiquidWarmStatic;
+using static XRL.Liquids.LiquidWarmStatic;
 
 namespace XRL.World.Parts
 {
@@ -329,7 +330,7 @@ namespace XRL.World.Parts
 				// Directly copy the code instead of calling the function so that I can alter the chances of movement and glitching
 				GameManager.Instance.StaticEffecting = 4;
 				SoundManager.PlayUISound("sfx_warmStaticSizzle");
-				List<GameObject> objects = Z.GetObjects(IsValidObject);
+				List<GameObject> objects = Z.GetObjects(o => o != null && o.IsReal && o.Render != null && o.Render.Visible);
 				Stat.PushState("WarmStaticGlitchZone" + Z.ZoneID);
 				try
 				{
