@@ -8,48 +8,78 @@ namespace XRL.World.Parts
 	[Serializable]
 	public class CyberneticsBRDDodgeAction : IPart
 	{
+		const string DefenderAfterAttackMissedId = "DefenderAfterAttackMissed";
+		public override bool SameAs(IPart p)
+		{
+			return false;
+		}
+
 		public override bool AllowStaticRegistration()
 		{
 			return true;
 		}
 
-		public override void Register(GameObject Object, IEventRegistrar Registrar)
+		public override bool WantEvent(int ID, int cascade)
 		{
-			Registrar.Register("DefenderAfterAttackMissed");
-			base.Register(Object, Registrar);
+			if (!base.WantEvent(ID, cascade) && ID != ImplantedEvent.ID && ID != UnimplantedEvent.ID)
+			{
+				return false;
+			}
+			return true;
 		}
+
+
+		public override bool HandleEvent(ImplantedEvent E)
+		{
+			if (GameObject.Validate(ref E.Implantee))
+			{
+				E.Implantee.RegisterPartEvent(this, DefenderAfterAttackMissedId);
+			}
+			return base.HandleEvent(E);
+		}
+
+		public override bool HandleEvent(UnimplantedEvent E)
+		{
+			GameObject implantee = E.Implantee;
+			if (GameObject.Validate(ref implantee))
+			{
+				implantee.UnregisterPartEvent(this, DefenderAfterAttackMissedId);
+			}
+			return base.HandleEvent(E);
+		}
+
+
 
 		public override bool FireEvent(Event E)
 		{
-			if (E.ID == "DefenderAfterAttackMissed" && ParentObject.Implantee != null)
+			if (E.ID != DefenderAfterAttackMissedId)
 			{
-				IComponent<GameObject>.AddPlayerMessage("debug: DefenderAfterAttackMissed event fired", 'g');
-
-				GameObject defender = E.GetGameObjectParameter("Defender");
-				if (defender == ParentObject.Implantee)
+				return base.FireEvent(E);
+			}
+			GameObject host = ParentObject.Implantee;
+			if (!GameObject.Validate(ref host))
+			{
+				return base.FireEvent(E);
+			}
+			GameObject defender = E.GetGameObjectParameter("Defender");
+			if (defender != host)
+			{
+				return base.FireEvent(E);
+			}
+			if (host.TryGetEffect<BRD_DodgeBoost>(out BRD_DodgeBoost effect))
+			{
+				//effect.Refresh(10, 100, 9, ParentObject);
+				if (host.IsPlayer())
 				{
-					IComponent<GameObject>.AddPlayerMessage("debug: Defender is the implantee", 'g');
-					GameObject host = ParentObject.Implantee;
-					if (host.IsPlayer())
-					{
-						IComponent<GameObject>.AddPlayerMessage("You slip the blow; your dodge implant sparks to life.", 'g');
-					}
-					if (host.TryGetEffect<BRD_DodgeBoost>(out BRD_DodgeBoost effect))
-					{
-						effect.Refresh(10, 100, 9, ParentObject);
-						if (host.IsPlayer())
-						{
-							IComponent<GameObject>.AddPlayerMessage("Hyper-response surges through you again.", 'g');
-						}
-					}
-					else
-					{
-						host.ApplyEffect(new BRD_DodgeBoost(10, 100, 9, ParentObject));
-						if (host.IsPlayer())
-						{
-							IComponent<GameObject>.AddPlayerMessage("Neural timing threads into your muscles.", 'g');
-						}
-					}
+					IComponent<GameObject>.AddPlayerMessage("You evade the strike; hyper-response surges anew.", 'g');
+				}
+			}
+			else
+			{
+				host.ApplyEffect(new BRD_DodgeBoost(10, 100, 9, ParentObject));
+				if (host.IsPlayer())
+				{
+					IComponent<GameObject>.AddPlayerMessage("You evade the strike—borrowed speed floods your limbs.", 'g');
 				}
 			}
 			return base.FireEvent(E);

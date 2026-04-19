@@ -67,6 +67,7 @@ namespace XRL.World.Parts
                 IComponent<GameObject>.AddPlayerMessage("debug: CommandBRDRebukeRobot event fired", 'g');
                 if (!AttemptRebuke())
                 {
+                    IComponent<GameObject>.AddPlayerMessage("debug: AttemptRebuke failed", 'r');
                     return false;
                 }
             }
@@ -88,10 +89,8 @@ namespace XRL.World.Parts
 
 		public bool AttemptRebuke()
 		{
-			if (!ParentObject.CheckFrozen())
-			{
-				return false;
-			}
+			IComponent<GameObject>.AddPlayerMessage("debug: AttemptRebuke event fired", 'g');
+
 			Cell cell = PickDestinationCell(5, AllowVis.OnlyVisible, Locked: false, IgnoreSolid: false, IgnoreLOS: false, RequireCombat: false, PickTarget.PickStyle.EmptyCell, "Rebuke what robot?", Snap: true);
 			if (cell == null)
 			{

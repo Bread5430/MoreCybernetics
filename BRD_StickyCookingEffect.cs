@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using XRL;
+using XRL.World;
 using XRL.World.Parts;
 
 namespace XRL.World.Effects
@@ -10,10 +12,70 @@ namespace XRL.World.Effects
     {
         public const string RemoveStickyEventId = "RemoveStickyProceduralCookingEffects";
 
+        private static readonly HashSet<string> VanillaProceduralCookingHungerOrMassClearEventIds = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "BecameHungry",
+            "BecameFamished",
+            "ApplyWellFed",
+            "ClearFoodEffects",
+            "RemoveProceduralCookingEffects"
+        };
+
+        internal static bool IsVanillaProceduralCookingHungerOrMassClearEvent(string eventId)
+        {
+            return VanillaProceduralCookingHungerOrMassClearEventIds.Contains(eventId);
+        }
+
+        private sealed class RegisterStringCollector : IEventRegistrar
+        {
+            public readonly List<string> StringIds = new List<string>();
+
+            public bool IsUnregister => false;
+
+            public void Register(IEventSource Source, IEventHandler Handler, int EventID, int Order = 0, bool Serialize = false)
+            {
+            }
+
+            public void Register(IEventSource Source, int EventID, int Order = 0, bool Serialize = false)
+            {
+            }
+
+            public void Register(int EventID, int Order = 0, bool Serialize = false)
+            {
+            }
+
+            public void Register(string EventID)
+            {
+                StringIds.Add(EventID);
+            }
+        }
+
+        /// <summary>
+        /// String events a vanilla <see cref="ProceduralCookingEffectWithTrigger"/> of <paramref name="concreteTriggerEffectType"/>
+        /// would register, minus hunger / mass-clear events the metabolic anchor must ignore.
+        /// </summary>
+        internal static List<string> CollectRetainedRegisterStrings(Type concreteTriggerEffectType, GameObject basis)
+        {
+            List<string> result = new List<string>();
+            if (concreteTriggerEffectType == null || !typeof(ProceduralCookingEffectWithTrigger).IsAssignableFrom(concreteTriggerEffectType))
+            {
+                return result;
+            }
+            RegisterStringCollector collector = new RegisterStringCollector();
+            Effect dummy = (Effect)Activator.CreateInstance(concreteTriggerEffectType);
+            dummy.Register(basis, collector);
+            foreach (string id in collector.StringIds)
+            {
+                if (!VanillaProceduralCookingHungerOrMassClearEventIds.Contains(id))
+                {
+                    result.Add(id);
+                }
+            }
+            return result;
+        }
+
         public BRD_StickyCookingEffect()
         {
-            DisplayName = "{{W|integrated}}";
-            Duration = 1;
         }
 
         public override void Register(GameObject Object, IEventRegistrar Registrar)
@@ -41,52 +103,66 @@ namespace XRL.World.Effects
 
         public static bool TryStickifyFirstVanilla(GameObject go)
         {
-            ProceduralCookingEffect src = null;
-            foreach (Effect e in go.Effects)
-            {
-                if (e is ProceduralCookingEffect pce && e is not BRD_StickyCookingEffect && e is not BRD_StickyCookingWithTriggerEffect)
-                {
-                    src = pce;
-                    break;
-                }
-            }
+            ProceduralCookingEffect src = PickBestProceduralCookingEffectToAnchor(go);
             if (src == null)
             {
                 return false;
             }
-            ProceduralCookingEffect sticky = CreateStickyCloneFrom(src);
+            ProceduralCookingEffect sticky = CreateStickyCloneFrom(src, go);
             go.RemoveEffect(src);
-            sticky.Duration = src.Duration;
-            sticky.DisplayName = src.DisplayName;
+            sticky.Duration = 1;
+            sticky.DisplayName = "{{W|integrated}}";
             sticky.Init(go);
             go.ApplyEffect(sticky);
             return true;
         }
 
-        public static ProceduralCookingEffect CreateStickyCloneFrom(ProceduralCookingEffect src)
+        /// <summary>
+        /// Prefer a metabolizing effect that carries trigger logic. Otherwise the first non-sticky
+        /// <see cref="ProceduralCookingEffect"/> (list order can put plain effects before trigger meals).
+        /// </summary>
+        private static ProceduralCookingEffect PickBestProceduralCookingEffectToAnchor(GameObject go)
         {
-            if (src is ProceduralCookingEffectWithTrigger wts)
+            ProceduralCookingEffect firstPlain = null;
+            foreach (Effect e in go.Effects)
             {
-                BRD_StickyCookingWithTriggerEffect sticky = new BRD_StickyCookingWithTriggerEffect();
-                foreach (ProceduralCookingEffectUnit unit in wts.units)
+                ProceduralCookingEffect pce = e as ProceduralCookingEffect;
+                if (pce == null)
                 {
-                    sticky.AddUnit(unit.DeepCopy(sticky));
+                    continue;
                 }
-                foreach (ProceduralCookingTriggeredAction action in wts.triggeredActions)
+                if (e is BRD_StickyCookingEffect || e is BRD_StickyCookingWithTriggerEffect)
                 {
-                    sticky.triggeredActions.Add(action.DeepCopy());
+                    continue;
                 }
-                return sticky;
+                ProceduralCookingEffectWithTrigger withTrigger = e as ProceduralCookingEffectWithTrigger;
+                if (withTrigger != null)
+                {
+                    return withTrigger;
+                }
+                if (firstPlain == null)
+                {
+                    firstPlain = pce;
+                }
             }
-            else
+            return firstPlain;
+        }
+
+        public static ProceduralCookingEffect CreateStickyCloneFrom(ProceduralCookingEffect src, GameObject basis)
+        {
+            if (src is ProceduralCookingEffectWithTrigger)
             {
-                BRD_StickyCookingEffect sticky = new BRD_StickyCookingEffect();
-                foreach (ProceduralCookingEffectUnit unit in src.units)
+                return new BRD_StickyCookingWithTriggerEffect
                 {
-                    sticky.AddUnit(unit.DeepCopy(sticky));
-                }
-                return sticky;
+                    Shadow = (ProceduralCookingEffectWithTrigger)src.DeepCopy(basis)
+                };
             }
+            BRD_StickyCookingEffect sticky = new BRD_StickyCookingEffect();
+            foreach (ProceduralCookingEffectUnit unit in src.units)
+            {
+                sticky.AddUnit(unit.DeepCopy(sticky));
+            }
+            return sticky;
         }
     }
 }
