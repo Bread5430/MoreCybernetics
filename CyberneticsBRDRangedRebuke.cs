@@ -19,15 +19,20 @@ namespace XRL.World.Parts
 
 		public override bool WantEvent(int ID, int cascade)
 		{
-			if (ID == SingletonEvent<GetRebukeLevelEvent>.ID
-			|| ID == PooledEvent<GetCompanionLimitEvent>.ID
-			|| ID == PooledEvent<GetItemElementsEvent>.ID
-			|| ID == GetShortDescriptionEvent.ID
-			|| ID == ImplantedEvent.ID
-			|| ID == UnimplantedEvent.ID){
-				return true;
+			// CommandEvent is pooled; without this, the Body→cybernetics cascade never asks this part,
+			// so HandleEvent(CommandEvent) and FireEvent for the command string never run (see CommandEvent.Send).
+			if (!base.WantEvent(ID, cascade)
+				&& ID != SingletonEvent<GetRebukeLevelEvent>.ID
+				&& ID != PooledEvent<GetCompanionLimitEvent>.ID
+				&& ID != PooledEvent<GetItemElementsEvent>.ID
+				&& ID != GetShortDescriptionEvent.ID
+				&& ID != ImplantedEvent.ID
+				&& ID != UnimplantedEvent.ID
+				&& ID != PooledEvent<CommandEvent>.ID)
+			{
+				return false;
 			}
-			return false;
+			return true;
 		}
 
 		public override bool HandleEvent(GetItemElementsEvent E)
@@ -80,7 +85,7 @@ namespace XRL.World.Parts
 			return base.HandleEvent(E);
 		}
 
-		
+
 		public override bool HandleEvent(ImplantedEvent E)
 		{
 			ActivatedAbilityID = E.Implantee.AddActivatedAbility("Tele-rebuke", commandId, "Cybernetics", "Rebuke a robot from range. Level + Ego-based difficulty check.", "\u0003");
@@ -89,19 +94,30 @@ namespace XRL.World.Parts
 
 		public bool AttemptRebuke()
 		{
-			IComponent<GameObject>.AddPlayerMessage("debug: AttemptRebuke event fired", 'g');
-
-			Cell cell = PickDestinationCell(5, AllowVis.OnlyVisible, Locked: false, IgnoreSolid: false, IgnoreLOS: false, RequireCombat: false, PickTarget.PickStyle.EmptyCell, "Rebuke what robot?", Snap: true);
+			GameObject actor = ParentObject.Implantee;
+			if (actor == null)
+			{
+				return false;
+			}
+			if (!actor.CheckFrozen())
+			{
+				return false;
+			}
+			// PickDestinationCell on IPart uses ParentObject (the implant) as basis; implants are not
+			// IsSelfControlledPlayer, so the picker never opens and returns null. Use the implantee's Physics.
+			Cell cell = actor.Physics.PickDestinationCell(5, AllowVis.OnlyVisible, Locked: true, IgnoreSolid: false, IgnoreLOS: true, RequireCombat: true, PickTarget.PickStyle.EmptyCell, "Rebuke what robot?", Snap: true);
 			if (cell == null)
 			{
 				return false;
 			}
+			IComponent<GameObject>.AddPlayerMessage("debug: cell found", 'g');
+
 			bool flag = false;
 			foreach (GameObject item in cell.GetObjectsWithPart("Brain"))
 			{
-				if (item != ParentObject && item.Statistics.ContainsKey("Level") && item.HasPart<Robot>())
+				if (item != actor && item.Statistics.ContainsKey("Level") && item.HasPart<Robot>())
 				{
-					if (!item.CheckInfluence(By: ParentObject, Type: base.Name))
+					if (!item.CheckInfluence(By: actor, Type: base.Name))
 					{
 						return false;
 					}
@@ -119,21 +135,21 @@ namespace XRL.World.Parts
 					{
 						num += Effect.LevelApplied;
 					}
-					int num2 = GetRebukeLevelEvent.GetFor(ParentObject, item);
-					num2 = ParentObject.StatMod("Ego") + num2 * 4 / 5;
+					int num2 = GetRebukeLevelEvent.GetFor(actor, item);
+					num2 = actor.StatMod("Ego") + num2 * 4 / 5;
 					if (Options.SifrahRecruitment)
 					{
 						new RebukingSifrah(item, num2, num).Play(item);
 					}
 					else
 					{
-						PerformMentalAttack(Rebuke, ParentObject, item, null, "Rebuke Robot", null, 2, int.MinValue, int.MinValue, num2, num);
+						PerformMentalAttack(Rebuke, actor, item, null, "Rebuke Robot", null, 2, int.MinValue, int.MinValue, num2, num);
 					}
-					ParentObject.UseEnergy(1000, "Skill Tele-rebuke");
-					CooldownMyActivatedAbility(ActivatedAbilityID, 100);
+					actor.UseEnergy(1000, "Skill Tele-rebuke");
+					CooldownMyActivatedAbility(ActivatedAbilityID, 100, actor);
 				}
 			}
-			if (!flag && ParentObject.IsPlayer())
+			if (!flag && actor.IsPlayer())
 			{
 				Popup.Show("There is nothing there to rebuke.");
 			}
@@ -142,12 +158,12 @@ namespace XRL.World.Parts
 
 		public bool Rebuke(MentalAttackEvent E)
 		{
-			return ParentObject.GetPart<Persuasion_RebukeRobot>()?.Rebuke(E) ?? false;
+			return E?.Attacker?.GetPart<Persuasion_RebukeRobot>()?.Rebuke(E) ?? false;
 		}
 
 		public bool FinalizeRebuke(GameObject Actor, GameObject Robot)
 		{
-			return ParentObject.GetPart<Persuasion_RebukeRobot>()?.FinalizeRebuke(Actor, Robot) ?? false;
+			return Actor?.GetPart<Persuasion_RebukeRobot>()?.FinalizeRebuke(Actor, Robot) ?? false;
 		}
 
 		public static bool Rebuke(GameObject Actor, GameObject Robot)
@@ -167,7 +183,11 @@ namespace XRL.World.Parts
 
 		public void Neutralize(GameObject Object)
 		{
-			Neutralize(ParentObject, Object);
+			GameObject implantee = ParentObject.Implantee;
+			if (implantee != null)
+			{
+				Neutralize(implantee, Object);
+			}
 		}
 	}
 }

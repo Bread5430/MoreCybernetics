@@ -68,15 +68,11 @@ namespace XRL.World.Parts
 			}
 			if (host.TryGetEffect<BRD_DodgeBoost>(out BRD_DodgeBoost effect))
 			{
-				//effect.Refresh(10, 100, 9, ParentObject);
-				if (host.IsPlayer())
-				{
-					IComponent<GameObject>.AddPlayerMessage("You evade the strike; hyper-response surges anew.", 'g');
-				}
+				// Do nothing when the dodge boost is still cooling down or currently active
 			}
 			else
 			{
-				host.ApplyEffect(new BRD_DodgeBoost(10, 100, 9, ParentObject));
+				host.ApplyEffect(new BRD_DodgeBoost(10, 100, 8, ParentObject));
 				if (host.IsPlayer())
 				{
 					IComponent<GameObject>.AddPlayerMessage("You evade the strike—borrowed speed floods your limbs.", 'g');

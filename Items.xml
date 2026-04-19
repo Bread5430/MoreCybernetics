@@ -10,7 +10,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Face" Cost="4" BehaviorDescription="Your weapons' percentage-based effects are 2X as likely to occur, including the base chance for critical hits." />
 
-    <part Name="AdjustSpecialEffectChances" FactorAdjust="2" ChargeUse="0" UsesChargePerActivation="false" NameForStatus="IncreasedPrecision" />  
+    <part Name="AdjustSpecialEffectChances" FactorAdjust="2" ChargeUse="0" UsesChargePerActivation="false" NameForStatus="IncreasedPrecision" />
 
   </object>
 
@@ -24,7 +24,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Feet" Cost="1" BehaviorDescription="+25% Carry Weight" />
 
-    <part Name="CyberneticsBRDLoadBalancer"/>  
+    <part Name="CyberneticsBRDLoadBalancer"/>
 
   </object>
 
@@ -42,7 +42,7 @@
 
  For every three spaces you dash, you get +2 to hit and +2 to penetration rolls." />
 
-    <part Name="CyberneticsBRDBurstJets"/>  
+    <part Name="CyberneticsBRDBurstJets"/>
 
   </object>
 
@@ -56,7 +56,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Arm" Cost="2" BehaviorDescription="Reloading or Swapping energy cells no longer takes a turn.\n(Stacking does nothing.)"/>
 
-    <part Name="CyberneticsBRDAutoLoaders"/>  
+    <part Name="CyberneticsBRDAutoLoaders"/>
 
   </object>
 
@@ -70,7 +70,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Head" Cost="5" BehaviorDescription="Gain 10 compute power per Ego modifier."/>
 
-    <part Name="CyberneticsBRDPersonaCore"/>  
+    <part Name="CyberneticsBRDPersonaCore"/>
 
   </object>
 
@@ -84,7 +84,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Face" Cost="2" BehaviorDescription="You cannot be confused."/>
 
-    <part Name="CyberneticsBRDMindFilters"/>  
+    <part Name="CyberneticsBRDMindFilters"/>
 
   </object>
 
@@ -98,7 +98,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="You gain an additional Body equipment slot."/>
 
-    <part Name="CyberneticsBRDMoreBody"/>  
+    <part Name="CyberneticsBRDMoreBody"/>
 
   </object>
 
@@ -126,7 +126,21 @@
 
     <part Name="CyberneticsBaseItem" Slots="Head" Cost="4" BehaviorDescription="Grants an additional ranged version of the Rebuke skill." />
 
-    <part Name="CyberneticsBRDRangedRebuke"/>  
+    <part Name="CyberneticsBRDRangedRebuke"/>
+
+  </object>
+
+  <object Name="BRD_SatUplink" Inherits="BaseCyberneticsEquipment_10point">
+
+    <part Name="Physics" Weight="1" />
+
+    <part Name="Description" Short="Uplink to a local kill-sat, and call down orbital support." />
+
+    <part Name="Render" DisplayName="{{Y|satellite uplink}}" Tile="CyberneticsBRD/cyb_satcom.png" TileColor="&amp;r" DetailColor="C" />
+
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="10" BehaviorDescription="Grants access to orbital support packages." />
+
+    <part Name="CyberneticsBRDSatUplink"/>
 
   </object>
 
@@ -140,7 +154,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Body" Cost="5" BehaviorDescription="While active, your current meal effect is integrated and no longer expires from hunger or eating. Activating makes you hungry. Toggle off to release integrated effects.\nAllows you to maintain multiple meal effects at once." />
 
-    <part Name="CyberneticsBRDPermanentCooking"/>  
+    <part Name="CyberneticsBRDPermanentCooking"/>
 
   </object>
 
@@ -154,7 +168,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Head,Body,Back" Cost="2" BehaviorDescription="After dodging an attack, you gain +100 Quickness for 1 turn. This effect has a 10 turn cooldown." />
 
-    <part Name="CyberneticsBRDDodgeAction"/>  
+    <part Name="CyberneticsBRDDodgeAction"/>
 
   </object>
 
@@ -168,7 +182,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Feet,Hands,Arm" Cost="1" BehaviorDescription="Allows you to inject one additional tonic without risk of side effects." />
 
-    <part Name="CyberneticsBRDMoreTonic"/>  
+    <part Name="CyberneticsBRDMoreTonic"/>
 
   </object>
 
@@ -182,7 +196,7 @@
 
     <part Name="CyberneticsBaseItem" Slots="Head,Back" Cost="2" BehaviorDescription="Gain +20 MoveSpeed per active tonic." />
 
-    <part Name="CyberneticsBRDTonicBuff"/>  
+    <part Name="CyberneticsBRDTonicBuff"/>
 
   </object>
 
