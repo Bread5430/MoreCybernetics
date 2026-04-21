@@ -50,7 +50,7 @@
 
     <part Name="Physics" Weight="1" />
 
-    <part Name="Description" Short="Servo-driven catches ride the forearm rails and strip spent cells from their wells without stealing a beat from the clock." />
+    <part Name="Description" Short="Servo-driven catches ride the forearm rails and strip spent cells from their wells." />
 
     <part Name="Render" DisplayName="{{Y|auto loader}}" Tile="CyberneticsBRD/cyb_autoloaders.png" TileColor="&amp;r" DetailColor="C" />
 
@@ -129,7 +129,7 @@
     <part Name="CyberneticsBRDRangedRebuke"/>
 
   </object>
-
+<!--
   <object Name="BRD_SatUplink" Inherits="BaseCyberneticsEquipment_10point">
 
     <part Name="Physics" Weight="1" />
@@ -143,6 +143,7 @@
     <part Name="CyberneticsBRDSatUplink"/>
 
   </object>
+  -->
 
   <object Name="BRD_MetabolicAnchor" Inherits="BaseCyberneticsEquipment_5point">
 

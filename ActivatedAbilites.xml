@@ -1,0 +1,17 @@
+<activatedabilities>
+    <ability Command="CommandBRDRebukeRobot">
+        <description>
+            <p>Attempt to rebuke a robot within 5 tiles.</p>
+            <br />
+            <statline Name="Range" />
+            <statline Name="Cooldown" Unit="round" />
+        </description>
+        <UITile Tile="Mutations/psychometry.bmp" Foreground="R" Detail="W" />
+    </ability>
+    <ability Command="CommandBRDMetabolicAnchor">
+        <description>
+            <p>Toggle on to integrate your current meal effect and prevent it from expiring. Toggle off to release integrated effects.</p>
+        </description>
+        <UITile Tile="Mutations/unstable_genome.bmp" Foreground="R" Detail="W" />
+    </ability>
+</activatedabilities>

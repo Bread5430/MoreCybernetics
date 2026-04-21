@@ -1,0 +1,17 @@
+Mostly unthemed collection of new cybernetics.
+
+[list]
+[*][b]Precision Glasses[/b] – Your weapons' percentage-based effects are 2X as likely to occur, including the base chance for critical hits.
+[*][b]Load Balancer[/b] – +25% Carry Weight
+[*][b]Jet Boots[/b] – You may activate this item to dash for 1 turn. When you move in a direction, you dash up to 20 spaces toward the nearest enemy or obstacle and perform an attack. For every three spaces you dash, you get +2 to hit and +2 to penetration rolls.
+[*][b]Auto Loader[/b] – Reloading or Swapping energy cells no longer takes a turn. (Stacking does nothing.)
+[*][b]Persona Core[/b] – Gain 10 compute power per Ego modifier.
+[*][b]Cognito-Filters[/b] – You cannot be confused.
+[*][b]Phase Overlay[/b] – You gain an additional Body equipment slot.
+[*][b]Heavy Mounts[/b] – Sweep attacks fire 5 additional shots.
+[*][b]Tele-Rebuke Uplink[/b] – Grants an additional ranged version of the Rebuke skill.
+[*][b]Metabolic Anchor[/b] – While active, your current meal effect is integrated and no longer expires from hunger or eating. Activating makes you hungry. Toggle off to release integrated effects. Allows you to maintain multiple meal effects at once.
+[*][b]Evasive Lattice[/b] – After dodging an attack, you gain +100 Quickness for 1 turn. This effect has a 10 turn cooldown.
+[*][b]Infusion Manifold[/b] – Allows you to inject one additional tonic without risk of side effects.
+[*][b]Tonic Motility Core[/b] – Gain +20 MoveSpeed per active tonic.
+[/list]

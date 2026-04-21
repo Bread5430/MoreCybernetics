@@ -19,7 +19,7 @@ namespace XRL.World.Parts
 	public class CyberneticsBRDSatUplink : IPart
 	{
 		public Guid ActivatedAbilityID = Guid.Empty;
-		public string commandId = "ActivateComLink";
+		public string commandId = "BRD_ActivateComLink";
 
 
 		List<string> OptionStrings = new List<string>
@@ -65,8 +65,8 @@ namespace XRL.World.Parts
 		public override bool WantEvent(int ID, int cascade)
 		{
 			if (base.WantEvent(ID, cascade)
-				|| ID == AIGetOffensiveAbilityListEvent.ID 
-				|| ID == ImplantedEvent.ID 
+				|| ID == AIGetOffensiveAbilityListEvent.ID
+				|| ID == ImplantedEvent.ID
 				|| ID == CommandEvent.ID
 				|| ID == UnimplantedEvent.ID
 				|| ID == BeforeAbilityManagerOpenEvent.ID)
@@ -111,9 +111,8 @@ namespace XRL.World.Parts
                 {
                     return ParentObject.Fail("You cannot do that on the world map.");
                 }
-				// The Archon accepts your prayers Aristocrat.\n Choose your blessing.
-				int choice_num = Popup.PickOption("Orbital Support Requested:\n Select your package:", null, "", "Sounds/UI/ui_notification", OptionStrings.ToArray(), keymap.ToArray(), null, null, null, null, null, 0, 60, 0, -1, AllowEscape: true);
-				
+				int choice_num = Popup.PickOption("Select your package:", null, "", "Sounds/UI/ui_notification", OptionStrings.ToArray(), keymap.ToArray(), null, null, null, null, null, 0, 60, 0, -1, AllowEscape: true);
+
 				switch (choice_num){
 					case 1:
 						delayedActionIndicator("mech");
@@ -137,31 +136,45 @@ namespace XRL.World.Parts
 
 		public void delayedActionIndicator(string action_type)
 		{
+			IComponent<GameObject>.AddPlayerMessage("debug: delayedActionIndicator event fired", 'g');
 
-			Cell cell = PickDestinationCell(12, RequireCombat: true, Label: "Choose Calldown Destination", Snap: true);
+			GameObject actor = ParentObject.Implantee;
+			if (actor == null)
+			{
+				return;
+			}
+			IComponent<GameObject>.AddPlayerMessage("debug: implantee found", 'g');
+			// Same as other cyberware: PickDestinationCell on IPart uses the implant item as basis, which is not
+			// IsSelfControlledPlayer, so the picker never runs and returns null. Target from the implantee's Physics.
+			Cell cell = actor.Physics.PickDestinationCell(12, RequireCombat: true, Label: "Choose Calldown Destination", Snap: true);
 			if (cell == null)
 			{
 				return;
 			}
+			IComponent<GameObject>.AddPlayerMessage("debug: cell found", 'g');
 
 			GameObject widget = GameObjectFactory.Factory.CreateObject("Widget");
 			widget.AddPart(new BRDDelayedActivation(ParentObject, 4, action_type));
+			IComponent<GameObject>.AddPlayerMessage("debug: widget created", 'g');
 
 			cell.AddObject(widget);
 			PlayWorldSound("Sounds/Missile/Fires/Heavy Weapons/sfx_missile_missileLauncher_fire");
 
 			MissileWeaponVFXConfiguration vfx = MissileWeaponVFXConfiguration.next();
 			CombatJuiceManager.startDelay();
-			vfx.addStep(0, ParentObject.CurrentCell.Location);
+			if (actor.CurrentCell != null)
+			{
+				vfx.addStep(0, actor.CurrentCell.Location);
+			}
 			vfx.addStep(0, cell.Location);
 			vfx.setPathProjectileVFX(0, "MissileWeaponsEffects/vls_laser", "duration::1;;beamColor0::#FFFFFF;;beamColor1::#FFFFFF");
 			CombatJuiceManager.endDelay();
 			CombatJuice.missileWeaponVFX(vfx);
 
-			if (!ParentObject.IsPlayer())
+			if (!actor.IsPlayer() && actor.Brain != null)
 			{
-				ParentObject.Brain.RemoveGoalsDescendedFrom<IMovementGoal>();
-				ParentObject.Brain.PushGoal(new FleeLocation(cell, (200 - ParentObject.Stat("MoveSpeed", 100)) * 3 / 100));
+				actor.Brain.RemoveGoalsDescendedFrom<IMovementGoal>();
+				actor.Brain.PushGoal(new FleeLocation(cell, (200 - actor.Stat("MoveSpeed", 100)) * 3 / 100));
 			}
 
 		}
@@ -177,6 +190,7 @@ namespace XRL.World.Parts
 
 			public BRDDelayedActivation(GameObject owner, int turns, String activation_type)
 			{
+				IComponent<GameObject>.AddPlayerMessage("debug: BRDDelayedActivation constructor fired", 'g');
 				this.owner = owner;
 				this.turns = turns;
 				this.activation_type = activation_type;
@@ -246,7 +260,7 @@ namespace XRL.World.Parts
 						CombatJuice.playPrefabAnimation(ParentObject.CurrentCell.Location, "MissileWeaponsEffects/vls_impact");
 						CombatJuiceWait(0.5f);
 					}
-					
+
 					// Activate the effect of the action based on the saved action string
 					if (activation_type == "mech")
 					{
@@ -258,7 +272,7 @@ namespace XRL.World.Parts
 					{
 						turret_drop();
 					}
-					
+
 					ParentObject.Obliterate();
 				}
 				else

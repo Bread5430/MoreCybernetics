@@ -7,7 +7,7 @@ namespace XRL.World.Parts
 	[Serializable]
 	public class CyberneticsBRDPermanentCooking : IPart
 	{
-		public static readonly string COMMAND_NAME = "CommandToggleCyberMetabolicAnchor";
+		public static readonly string COMMAND_NAME = "CommandBRDMetabolicAnchor";
 
 		public Guid ActivatedAbilityID = Guid.Empty;
 
