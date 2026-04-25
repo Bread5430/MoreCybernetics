@@ -15,7 +15,12 @@ namespace XRL.World.Parts
 	{
 		public string commandId = "CommandBRDRebukeRobot";
 		public Guid ActivatedAbilityID = Guid.Empty;
-		public int Bonus = 2;
+		public int Bonus = 5;
+
+		public void CollectStats(Templates.StatCollector stats)
+		{
+			stats.Set("Cooldown", GetAvailableComputePowerEvent.AdjustDown(ParentObject, 100));
+		}
 
 		public override bool WantEvent(int ID, int cascade)
 		{
@@ -69,10 +74,10 @@ namespace XRL.World.Parts
         {
             if (E.Command == commandId && E.Actor == ParentObject.Implantee)
             {
-                IComponent<GameObject>.AddPlayerMessage("debug: CommandBRDRebukeRobot event fired", 'g');
+                //IComponent<GameObject>.AddPlayerMessage("debug: CommandBRDRebukeRobot event fired", 'g');
                 if (!AttemptRebuke())
                 {
-                    IComponent<GameObject>.AddPlayerMessage("debug: AttemptRebuke failed", 'r');
+                    //IComponent<GameObject>.AddPlayerMessage("debug: AttemptRebuke failed", 'r');
                     return false;
                 }
             }
@@ -99,10 +104,6 @@ namespace XRL.World.Parts
 			{
 				return false;
 			}
-			if (!actor.CheckFrozen())
-			{
-				return false;
-			}
 			// PickDestinationCell on IPart uses ParentObject (the implant) as basis; implants are not
 			// IsSelfControlledPlayer, so the picker never opens and returns null. Use the implantee's Physics.
 			Cell cell = actor.Physics.PickDestinationCell(5, AllowVis.OnlyVisible, Locked: true, IgnoreSolid: false, IgnoreLOS: true, RequireCombat: true, PickTarget.PickStyle.EmptyCell, "Rebuke what robot?", Snap: true);
@@ -110,7 +111,7 @@ namespace XRL.World.Parts
 			{
 				return false;
 			}
-			IComponent<GameObject>.AddPlayerMessage("debug: cell found", 'g');
+			//IComponent<GameObject>.AddPlayerMessage("debug: cell found", 'g');
 
 			bool flag = false;
 			foreach (GameObject item in cell.GetObjectsWithPart("Brain"))
@@ -146,7 +147,7 @@ namespace XRL.World.Parts
 						PerformMentalAttack(Rebuke, actor, item, null, "Rebuke Robot", null, 2, int.MinValue, int.MinValue, num2, num);
 					}
 					actor.UseEnergy(1000, "Skill Tele-rebuke");
-					CooldownMyActivatedAbility(ActivatedAbilityID, 100, actor);
+					CooldownMyActivatedAbility(ActivatedAbilityID, GetAvailableComputePowerEvent.AdjustDown(actor, 100), actor);
 				}
 			}
 			if (!flag && actor.IsPlayer())
@@ -188,6 +189,18 @@ namespace XRL.World.Parts
 			{
 				Neutralize(implantee, Object);
 			}
+		}
+
+		public override bool HandleEvent(GetRebukeLevelEvent E)
+		{
+			E.Level += GetAvailableComputePowerEvent.AdjustUp(E.Actor, Bonus);
+			return base.HandleEvent(E);
+		}
+
+		public override bool HandleEvent(GetShortDescriptionEvent E)
+		{
+			E.Postfix.AppendRules("Compute power on the local lattice increases this item's effectiveness.");
+			return base.HandleEvent(E);
 		}
 	}
 }

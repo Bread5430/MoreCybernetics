@@ -96,13 +96,13 @@
 
     <part Name="Render" DisplayName="{{Y|phase overlay}}" Tile="CyberneticsBRD/cyb_phase_overlay.png" TileColor="&amp;r" DetailColor="C" />
 
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="You gain an additional Body equipment slot."/>
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="3" BehaviorDescription="You gain an additional Body equipment slot.\nDodge and Armor values are averaged between the two slots."/>
 
     <part Name="CyberneticsBRDMoreBody"/>
 
   </object>
 
-  <object Name="BRD_SuperSweep" Inherits="BaseCyberneticsEquipment_3point">
+  <object Name="BRD_SuperSweep" Inherits="BaseCyberneticsEquipment_2point">
 
     <part Name="Physics" Weight="1" />
 
@@ -110,26 +110,26 @@
 
     <part Name="Render" DisplayName="{{Y|heavy mounts}}" Tile="CyberneticsBRD/cyb_supersweep.png" TileColor="&amp;r" DetailColor="C" />
 
-    <part Name="CyberneticsBaseItem" Slots="Hand" Cost="3" BehaviorDescription="Sweep attacks fire 5 additional shots."/>
+    <part Name="CyberneticsBaseItem" Slots="Hand" Cost="2" BehaviorDescription="The Sweep skill fires 5 additional shots."/>
 
     <part Name="CyberneticsPropertyModifier" Props="HeavyWeaponsSweepModifyShots:5" />
 
   </object>
 
-  <object Name="BRD_TeleRebuke" Inherits="BaseCyberneticsEquipment_4point">
+  <object Name="BRD_TeleRebuke" Inherits="BaseCyberneticsEquipment_3point">
 
     <part Name="Physics" Weight="1" />
 
     <part Name="Description" Short="A subcranial lattice stages ego-pressure into a tight beam, letting doctrinal argument leap the gap between skull and distant chassis." />
 
-    <part Name="Render" DisplayName="{{Y|tele-rebuke uplink}}" Tile="CyberneticsBRD/cyb_satcom.png" TileColor="&amp;r" DetailColor="C" />
+    <part Name="Render" DisplayName="{{Y|tele-rebuke uplink}}" Tile="CyberneticsBRD/cyb_rebuke.png" TileColor="&amp;r" DetailColor="C" />
 
-    <part Name="CyberneticsBaseItem" Slots="Head" Cost="4" BehaviorDescription="Grants an additional ranged version of the Rebuke skill." />
+    <part Name="CyberneticsBaseItem" Slots="Head" Cost="3" BehaviorDescription="Grants an additional ranged version of the Rebuke skill.\nYou rebuke robots as if you were 5 levels higher." />
 
     <part Name="CyberneticsBRDRangedRebuke"/>
 
   </object>
-<!--
+
   <object Name="BRD_SatUplink" Inherits="BaseCyberneticsEquipment_10point">
 
     <part Name="Physics" Weight="1" />
@@ -143,9 +143,8 @@
     <part Name="CyberneticsBRDSatUplink"/>
 
   </object>
-  -->
 
-  <object Name="BRD_MetabolicAnchor" Inherits="BaseCyberneticsEquipment_5point">
+  <object Name="BRD_MetabolicAnchor" Inherits="BaseCyberneticsEquipment_6point">
 
     <part Name="Physics" Weight="1" />
 
@@ -153,13 +152,13 @@
 
     <part Name="Render" DisplayName="{{Y|metabolic anchor}}" Tile="CyberneticsBRD/cyb_stomach.png" TileColor="&amp;r" DetailColor="C" />
 
-    <part Name="CyberneticsBaseItem" Slots="Body" Cost="5" BehaviorDescription="While active, your current meal effect is integrated and no longer expires from hunger or eating. Activating makes you hungry. Toggle off to release integrated effects.\nAllows you to maintain multiple meal effects at once." />
+    <part Name="CyberneticsBaseItem" Slots="Body" Cost="6" BehaviorDescription="While active, your current meal effect is integrated and no longer expires from hunger or eating. Activating makes you hungry. Toggle off to release integrated effects.\nAllows you to maintain multiple meal effects at once." />
 
     <part Name="CyberneticsBRDPermanentCooking"/>
 
   </object>
 
-  <object Name="BRD_EvasiveLattice" Inherits="BaseCyberneticsEquipment_2point">
+  <object Name="BRD_EvasiveLattice" Inherits="BaseCyberneticsEquipment_4point">
 
     <part Name="Physics" Weight="1" />
 
@@ -167,7 +166,7 @@
 
     <part Name="Render" DisplayName="{{Y|evasive lattice}}" Tile="CyberneticsBRD/cyb_dodgelattice.png" TileColor="&amp;r" DetailColor="C" />
 
-    <part Name="CyberneticsBaseItem" Slots="Head,Body,Back" Cost="2" BehaviorDescription="After dodging an attack, you gain +100 Quickness for 1 turn. This effect has a 10 turn cooldown." />
+    <part Name="CyberneticsBaseItem" Slots="Head,Body,Back" Cost="4" BehaviorDescription="After dodging a melee attack, you gain +100 Quickness for 2 turns. This effect has a 10 turn cooldown." />
 
     <part Name="CyberneticsBRDDodgeAction"/>
 
@@ -187,7 +186,7 @@
 
   </object>
 
-  <object Name="BRD_TonicMotilityCore" Inherits="BaseCyberneticsEquipment_2point">
+  <object Name="BRD_TonicMotilityCore" Inherits="BaseCyberneticsEquipment_3point">
 
     <part Name="Physics" Weight="1" />
 
@@ -195,7 +194,7 @@
 
     <part Name="Render" DisplayName="{{Y|tonic motility core}}" Tile="CyberneticsBRD/cyb_tonicengine.png" TileColor="&amp;r" DetailColor="C" />
 
-    <part Name="CyberneticsBaseItem" Slots="Head,Back" Cost="2" BehaviorDescription="Gain +20 MoveSpeed per active tonic." />
+    <part Name="CyberneticsBaseItem" Slots="Head,Back" Cost="3" BehaviorDescription="Gain +20 MoveSpeed per active tonic." />
 
     <part Name="CyberneticsBRDTonicBuff"/>
 

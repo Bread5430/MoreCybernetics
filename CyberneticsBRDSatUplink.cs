@@ -24,9 +24,9 @@ namespace XRL.World.Parts
 
 		List<string> OptionStrings = new List<string>
 		{
-			"Mech Drop", // Steel's Perfection
-			"Turret Drop", // Boundless Riches
-			"Anti-Reality Strike" // Sultan's Gaze
+			"Mechsuit Drop",
+			"Swarmer Support",
+			"Ontokinetic Strike"
 		};
 
 		List<char> keymap = new List<char>
@@ -46,20 +46,10 @@ namespace XRL.World.Parts
 			return false;
 		}
 
-		public int GetCooldown()
-		{
-			return 150;
-		}
-
-		public int GetDuration()
-		{
-			return 1;
-		}
-
 		public void CollectStats(Templates.StatCollector stats)
 		{
-			stats.Set("Duration", GetDuration());
-			stats.Set("Cooldown", GetCooldown());
+			stats.Set("Range", 12);
+			stats.Set("Cooldown", GetAvailableComputePowerEvent.AdjustDown(ParentObject, 3000));
 		}
 
 		public override bool WantEvent(int ID, int cascade)
@@ -114,13 +104,13 @@ namespace XRL.World.Parts
 				int choice_num = Popup.PickOption("Select your package:", null, "", "Sounds/UI/ui_notification", OptionStrings.ToArray(), keymap.ToArray(), null, null, null, null, null, 0, 60, 0, -1, AllowEscape: true);
 
 				switch (choice_num){
-					case 1:
+					case 0:
 						delayedActionIndicator("mech");
 						break;
-					case 2:
+					case 1:
 						delayedActionIndicator("turret");
 						break;
-					case 3:
+					case 2:
 						delayedActionIndicator("strike");
 						break;
 
@@ -129,47 +119,43 @@ namespace XRL.World.Parts
 				if (choice_num > 0)
 				{
 					E.Actor.UseEnergy(1000, "Orbital Package Request");
+					//set cooldown after use
+					E.Actor.CooldownActivatedAbility(ActivatedAbilityID, GetAvailableComputePowerEvent.AdjustDown(E.Actor, 3000));
 				}
 			}
+			return base.HandleEvent(E);
+		}
+		public override bool HandleEvent(GetShortDescriptionEvent E)
+		{
+			E.Postfix.AppendRules("Compute power on the local lattice reduces this item's cooldown.");
 			return base.HandleEvent(E);
 		}
 
 		public void delayedActionIndicator(string action_type)
 		{
-			IComponent<GameObject>.AddPlayerMessage("debug: delayedActionIndicator event fired", 'g');
+			//IComponent<GameObject>.AddPlayerMessage("debug: delayedActionIndicator event fired", 'g');
 
 			GameObject actor = ParentObject.Implantee;
 			if (actor == null)
 			{
 				return;
 			}
-			IComponent<GameObject>.AddPlayerMessage("debug: implantee found", 'g');
+			//IComponent<GameObject>.AddPlayerMessage("debug: implantee found", 'g');
 			// Same as other cyberware: PickDestinationCell on IPart uses the implant item as basis, which is not
 			// IsSelfControlledPlayer, so the picker never runs and returns null. Target from the implantee's Physics.
-			Cell cell = actor.Physics.PickDestinationCell(12, RequireCombat: true, Label: "Choose Calldown Destination", Snap: true);
+			Cell cell = actor.Physics.PickDestinationCell(12, AllowVis.OnlyVisible, Locked: true, IgnoreSolid: false, IgnoreLOS: true, RequireCombat: true, PickTarget.PickStyle.EmptyCell, "Choose Calldown Destination", Snap: true);
 			if (cell == null)
 			{
 				return;
 			}
-			IComponent<GameObject>.AddPlayerMessage("debug: cell found", 'g');
+			//IComponent<GameObject>.AddPlayerMessage("debug: cell found", 'g');
 
 			GameObject widget = GameObjectFactory.Factory.CreateObject("Widget");
 			widget.AddPart(new BRDDelayedActivation(ParentObject, 4, action_type));
-			IComponent<GameObject>.AddPlayerMessage("debug: widget created", 'g');
+			//IComponent<GameObject>.AddPlayerMessage("debug: widget created", 'g');
 
 			cell.AddObject(widget);
 			PlayWorldSound("Sounds/Missile/Fires/Heavy Weapons/sfx_missile_missileLauncher_fire");
-
-			MissileWeaponVFXConfiguration vfx = MissileWeaponVFXConfiguration.next();
-			CombatJuiceManager.startDelay();
-			if (actor.CurrentCell != null)
-			{
-				vfx.addStep(0, actor.CurrentCell.Location);
-			}
-			vfx.addStep(0, cell.Location);
-			vfx.setPathProjectileVFX(0, "MissileWeaponsEffects/vls_laser", "duration::1;;beamColor0::#FFFFFF;;beamColor1::#FFFFFF");
-			CombatJuiceManager.endDelay();
-			CombatJuice.missileWeaponVFX(vfx);
 
 			if (!actor.IsPlayer() && actor.Brain != null)
 			{
@@ -190,7 +176,7 @@ namespace XRL.World.Parts
 
 			public BRDDelayedActivation(GameObject owner, int turns, String activation_type)
 			{
-				IComponent<GameObject>.AddPlayerMessage("debug: BRDDelayedActivation constructor fired", 'g');
+				//IComponent<GameObject>.AddPlayerMessage("debug: BRDDelayedActivation constructor fired", 'g');
 				this.owner = owner;
 				this.turns = turns;
 				this.activation_type = activation_type;
@@ -350,11 +336,9 @@ namespace XRL.World.Parts
 				{
 					foreach (GameObject item in objects)
 					{
-						if (60.in100())
-						{
-							MoveToRandomIn(Z, item);
-						}
-						if (10.in100())
+
+						MoveToRandomIn(Z, item);
+						if (50.in100())
 						{
 							GlitchObject(item);
 						}
@@ -369,15 +353,11 @@ namespace XRL.World.Parts
 				// Then trigger explosion
 				List<GameObject> hit = Event.NewGameObjectList();
 				hit.Add(ParentObject);
-				Physics.ApplyExplosion(ParentObject.CurrentCell, 30000, Hit: hit, Local: false, Owner: owner); //, Phase: phase);
+				Physics.ApplyExplosion(ParentObject.CurrentCell, 500000, Hit: hit, Local: false, Owner: owner); //, Phase: phase);
 			}
 
 			public void turret_drop()
 			{
-				// Scatter pattern: DeploymentGrenade.DoDetonate (e.g. Spring Grenade) rolls Count and
-				// deploys to random cells from GetLocalAdjacentCells(Radius).
-				// Turrets: TurretTinker.CommandTinkerTurret / IntegratedWeaponHosts.GenerateTurret with a
-				// DynamicInheritsTable missile weapon (GetRandomTurretWeaponBlueprint).
 				Cell baseCell = ParentObject.CurrentCell;
 				if (baseCell == null)
 				{
@@ -388,9 +368,13 @@ namespace XRL.World.Parts
 				{
 					return;
 				}
-				int tier = deployer.GetTier();
+				string swarmWeaponBlueprint = ResolveSwarmTurretWeaponBlueprint();
+				if (swarmWeaponBlueprint.IsNullOrEmpty())
+				{
+					return;
+				}
 				int radius = 2;
-				int count = "4-6".RollCached();
+				int count = 3;
 				List<Cell> candidateCells = baseCell.GetLocalAdjacentCells(radius);
 				Dictionary<int, bool> usedCells = new Dictionary<int, bool>();
 				for (int i = 0; i < count; i++)
@@ -416,11 +400,13 @@ namespace XRL.World.Parts
 						continue;
 					}
 					usedCells[cell.LocalCoordKey] = true;
-					string weaponBlueprint = GetRandomTurretMissileWeaponBlueprint(tier);
-					GameObject turret = IntegratedWeaponHosts.GenerateTurret(GameObject.Create(weaponBlueprint), deployer, overrideSupply: true);
+					GameObject turret = IntegratedWeaponHosts.GenerateTurret(GameObject.Create(swarmWeaponBlueprint), deployer, overrideSupply: true);
 					cell.AddObject(turret);
 					turret.MakeActive();
+					// Keep supply local and deterministic: no player ammo transfer prompt, 100 HE missiles loaded.
+					turret.SetIntProperty("IntegratedWeaponHostShots", 100);
 					turret.FireEventOnBodyparts(Event.New("GenerateIntegratedHostInitialAmmo", "Host", turret));
+					turret.ReceiveObject("HE Missile", 100);
 					CommandReloadEvent.Execute(turret, FreeAction: true);
 					turret.PlayWorldSound("Sounds/Robot/sfx_turret_deploy");
 				}
@@ -451,28 +437,31 @@ namespace XRL.World.Parts
 				return true;
 			}
 
-			private static string GetRandomTurretMissileWeaponBlueprint(int tier)
+			private static string ResolveSwarmTurretWeaponBlueprint()
 			{
-				string populationName = "DynamicInheritsTable:MissileWeapon:Tier" + tier;
-				int attempts = 0;
-				do
+				string[] preferred = new string[4] { "Swarm Rack", "Swarm Missile Rack", "Swarm Launcher", "Swarmer Missile Rack" };
+				foreach (string blueprintName in preferred)
 				{
-					PopulationResult populationResult = PopulationManager.RollOneFrom(populationName);
-					if (populationResult == null)
+					GameObjectBlueprint preferredBlueprint = GameObjectFactory.Factory.GetBlueprint(blueprintName);
+					if (preferredBlueprint != null)
 					{
-						return "Pump Shotgun";
-					}
-					if (++attempts > 10)
-					{
-						return "Pump Shotgun";
-					}
-					GameObjectBlueprint blueprint = GameObjectFactory.Factory.GetBlueprint(populationResult.Blueprint);
-					if (blueprint != null && blueprint.GetPartParameter("MissileWeapon", "FiresManually", Default: true))
-					{
-						return populationResult.Blueprint;
+						return preferredBlueprint.Name;
 					}
 				}
-				while (true);
+				foreach (GameObjectBlueprint bp in GameObjectFactory.Factory.BlueprintList)
+				{
+					if (!bp.DescendsFrom("MissileWeapon"))
+					{
+						continue;
+					}
+					string name = bp.Name ?? "";
+					string displayName = bp.CachedDisplayNameStripped ?? "";
+					if (name.IndexOf("Swarm", StringComparison.OrdinalIgnoreCase) >= 0 || displayName.IndexOf("Swarm", StringComparison.OrdinalIgnoreCase) >= 0)
+					{
+						return bp.Name;
+					}
+				}
+				return null;
 			}
 		}
 
@@ -518,6 +507,7 @@ namespace XRL.World.Parts
 			{
 				return;
 			}
+			NormalizeMechSpawnState(mech);
 			if (!mech.TryGetPart<Vehicle>(out Vehicle veh))
 			{
 				return;
@@ -525,7 +515,7 @@ namespace XRL.World.Parts
 			GameObject pilot = veh.Pilot;
 			if (pilot != null && GameObject.Validate(ref pilot) && pilot != deployer && !pilot.IsPlayer())
 			{
-				pilot.Die(deployer);
+				pilot.Die(mech);
 			}
 			veh.BindBlueprint = null;
 			if (deployer.IsPlayer())
@@ -537,6 +527,27 @@ namespace XRL.World.Parts
 				veh.OwnerID = deployer.ID;
 			}
 			mech.SetAlliedLeader<AllyConstructed>(deployer);
+		}
+
+		private static void NormalizeMechSpawnState(GameObject mech)
+		{
+			if (mech == null)
+			{
+				return;
+			}
+			if (mech.HasStat("Hitpoints"))
+			{
+				int maxHp = mech.GetStat("Hitpoints").BaseValue;
+				if (maxHp > 0)
+				{
+					mech.Heal(maxHp * 10, Message: false, FloatText: false);
+				}
+			}
+			if (mech.TryGetPart<EnergyCellSocket>(out EnergyCellSocket socket) && socket.Cell != null)
+			{
+				IEnergyCell cell = socket.Cell.GetPartDescendedFrom<IEnergyCell>();
+				cell?.SetChargePercentage(50);
+			}
 		}
 
 		[Serializable]

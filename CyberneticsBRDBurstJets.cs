@@ -8,7 +8,7 @@ namespace XRL.World.Parts
 	{
 		public Guid ActivatedAbilityID = Guid.Empty;
 
-		public string commandId = "ActivateBurstJet";
+		public string commandId = "BRD_ActivateBurstJet";
 
 		public override bool SameAs(IPart p)
 		{
@@ -20,11 +20,6 @@ namespace XRL.World.Parts
 			return false;
 		}
 
-		public int GetCooldown()
-		{
-			return 150;
-		}
-
 		public int GetDuration()
 		{
 			return 1;
@@ -32,16 +27,16 @@ namespace XRL.World.Parts
 
 		public void CollectStats(Templates.StatCollector stats)
 		{
-			stats.Set("Duration", GetDuration());
-			stats.Set("Cooldown", GetCooldown());
+			//stats.Set("Duration", GetDuration());
+			stats.Set("Cooldown", GetAvailableComputePowerEvent.AdjustDown(ParentObject, 150));
 		}
 
 		public override bool WantEvent(int ID, int cascade)
 		{
 			if (base.WantEvent(ID, cascade)
 				|| ID == AIGetMovementAbilityListEvent.ID
-				|| ID == AIGetOffensiveAbilityListEvent.ID 
-				|| ID == ImplantedEvent.ID 
+				|| ID == AIGetOffensiveAbilityListEvent.ID
+				|| ID == ImplantedEvent.ID
 				|| ID == CommandEvent.ID
 				|| ID == UnimplantedEvent.ID
 				|| ID == BeforeAbilityManagerOpenEvent.ID)
@@ -61,7 +56,7 @@ namespace XRL.World.Parts
 		{
 			if (E.Actor == ParentObject.Equipped && E.Distance - E.StandoffDistance * 2 >= 10 && E.Actor.IsActivatedAbilityAIUsable(ActivatedAbilityID))
 			{
-				E.Add("ActivateBurstJet", 1, ParentObject, Inv: true);
+				E.Add(commandId, 1, ParentObject, Inv: true);
 			}
 			return base.HandleEvent(E);
 		}
@@ -70,7 +65,7 @@ namespace XRL.World.Parts
 		{
 			if (E.Actor == ParentObject.Implantee && E.Actor.IsActivatedAbilityAIUsable(ActivatedAbilityID))
 			{
-				E.Add("ActivateBurstJet", 1, ParentObject, Inv: true);
+				E.Add(commandId, 1, ParentObject, Inv: true);
 			}
 			return base.HandleEvent(E);
 		}
@@ -119,9 +114,14 @@ namespace XRL.World.Parts
 				return false;
 			}
 			IComponent<GameObject>.XDidY(Implantee, "start", "dashing in a plume of flame and smoke", "!", null, null, Implantee);
-			Implantee.CooldownActivatedAbility(ActivatedAbilityID, GetCooldown());
+			Implantee.CooldownActivatedAbility(ActivatedAbilityID, GetAvailableComputePowerEvent.AdjustDown(Implantee, 150));
 			Implantee.PlayWorldSound("Sounds/Interact/sfx_interact_jetpack_activate");
 			return true;
+		}
+		public override bool HandleEvent(GetShortDescriptionEvent E)
+		{
+			E.Postfix.AppendRules("Compute power on the local lattice reduces this item's cooldown.");
+			return base.HandleEvent(E);
 		}
 	}
 }

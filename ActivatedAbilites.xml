@@ -14,4 +14,19 @@
         </description>
         <UITile Tile="Mutations/unstable_genome.bmp" Foreground="R" Detail="W" />
     </ability>
+    <ability Command="BRD_ActivateBurstJet">
+        <description>
+            <p>Perform a dash attack during your next action.</p>
+            <statline Name="Cooldown" Unit="round" />
+        </description>
+        <UITile Tile="CyberneticsBRD/cyb_jetboot.png" Foreground="R" Detail="W" />
+    </ability>
+    <ability Command="BRD_ActivateComLink">
+        <description>
+            <p>Drop a mechsuit, swarmer support, or ontokinetic strike.</p>
+            <statline Name="Range" />
+            <statline Name="Cooldown" Unit="round" />
+        </description>
+        <UITile Tile="CyberneticsBRD/cyb_comlink.png" Foreground="R" Detail="W" />
+    </ability>
 </activatedabilities>
